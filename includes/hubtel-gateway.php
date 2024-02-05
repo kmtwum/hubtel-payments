@@ -249,7 +249,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             "cancellationUrl" => WC()->api_request_url('hubtel_gateway') . '?o=' . $order_data->id,
             "returnUrl" => WC()->api_request_url('hubtel_gateway') . '?o=' . $order_data->id,
             "mobile" => $this->mobileNumber,
-            "userMode" => $this->userMode
+            "userMode" => $this->userMode,
+            "site" => get_bloginfo('url')
         ];
 
         $this->tail($payload);
@@ -277,7 +278,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             "cancellationUrl" => WC()->api_request_url('hubtel_gateway') . '?o=' . $order_data->id,
             "accountNumber" => $this->merchantAccount,
             "clientReference" => $this->generateId('WOO') . $order_data->id,
-            "userMode" => $this->userMode
+            "userMode" => $this->userMode,
+            "site" => get_bloginfo('url')
         ];
 
         $this->tail($payload);
@@ -364,7 +366,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
     }
 
     public function tail($str) {
-        @file_put_contents(__DIR__ . '/bro.txt', print_r($str, true) . "\r\n", FILE_APPEND | LOCK_EX);
+        @file_put_contents(__DIR__ . '/log.txt', print_r($str, true) . "\r\n", FILE_APPEND | LOCK_EX);
     }
 
     public function generateId($prefix): string {
