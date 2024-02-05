@@ -84,7 +84,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
                 'description' => 'Payment will fail if selected. Do not go ahead!',
                 'activation' => $this->get_setting('activation_code'),
                 'supports' => array_filter($this->gateway->supports, [$this->gateway, 'supports']),
-                'logo' => Hubtel::plugin_url() . '/assets/trans.png'
+                'logo' => Hubtel::plugin_url() . '/assets/blank.png'
             ];
         }
 
@@ -109,7 +109,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
             'activation' => $this->get_setting('activation_code'),
             'supports' => array_filter($this->gateway->supports, [$this->gateway, 'supports']),
             'logo' => $valid ? Hubtel::plugin_url() . '/assets/hubtel.png'
-                : Hubtel::plugin_url() . '/assets/trans.png'
+                : Hubtel::plugin_url() . '/assets/blank.png'
         ];
     }
 }
