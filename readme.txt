@@ -12,10 +12,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Accept payments on your WooCommerce powered website directly to your Hubtel account.
 
 == Description ==
-**NOTE:** This plugin is in no way affiliated with Hubtel. It’s developed by an independent developer.
+NOTE: This plugin is in no way affiliated with Hubtel. It’s developed by an independent developer.
 All issues encountered must be addressed to the developer and not Hubtel.
 
-Contact the developer at: [support@geniustechhub.com](mailto:cleanafricahosting@gmail.com)
+Contact the developer at: [support@geniustechhub.com](mailto:support@geniustechhub.com)
 This plugin helps you integrate __[Hubtel](https://developers.hubtel.com)__ as a payment gateway for your Woocommerce/WordPress website. 
 Your customers will be able to pay you with any mobile money wallet and bank card issued in Ghana.
 
@@ -31,7 +31,7 @@ It’s an easy way to accept payment on your website that runs on WordPress/Wooc
 = What do I need to use the plugin? =
 
 You'll need a [Hubtel](https://hubtel.com) account.
-__NOTE:__ There are two types of users on Hubtel
+NOTE: There are two types of users on Hubtel
 - Customers or Consumers
 - Merchants or Businesses
 
@@ -40,7 +40,7 @@ Depending on the type of user you are, your process of obtaining your client key
  __CONSUMERS__
 - Client ID - Obtained from: https://developers.hubtel.com/manage-keys
 - Client Secret - Obtained: from https://developers.hubtel.com/manage-keys
-- Plugin activation key - Click to purchase: https://p.hbtl.co/y4RNEC
+- Plugin activation key - Click to purchase: https://paystack.com/pay/hubtel-activate
 
 __MERCHANTS__
 - API Key (password) - Obtained from: https://bo.hubtel.com/app/manage-business/programmable-keys
