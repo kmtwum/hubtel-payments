@@ -138,7 +138,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
                 'title' => __('Activation Key', 'woo-hubtel'),
                 'id' => 'activation_code',
                 'type' => 'password',
-                'description' => __('Code to activate the plugin.',
+                'description' => __('Code to activate the plugin. The plugin is activated after you enter a valid key',
                     'woo-hubtel'),
                 'desc_tip' => false
             ],
