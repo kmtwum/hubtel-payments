@@ -42,8 +42,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
         $this->method_description = __('Pay with mobile money or a Ghana issued card.', 'woo-hubtel');
 
         // Load the settings.
-        $this->init_form_fields();
         $this->init_settings();
+        $this->init_form_fields();
 
         // Define user set variables.
         $this->title = $this->get_option('title');
@@ -63,12 +63,13 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
     public function init_form_fields() {
         $validity = $this->validate_request($this->settings['activation_code']);
         if ($validity->valid) {
-            $valid_message = "<br> Subscription Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #00c731'>Activated</span> <br>
-            Expires on $validity->validTill";
+            $valid_message = "<br> Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #00c731'>Activated</span> <br>
+            Expires on " . date('jS F Y', strtotime($validity->validTill)) . ".";
+        } elseif ($validity->validTill != null) {
+            $valid_message = "<br> Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #bb0000'>Expired</span> <br>
+            Expired on " . date('jS F Y', strtotime($validity->validTill)). "Please purchase a new code.";
         } else {
-            $valid_message = "<br> Subscription Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #bb0000'>Expired</span> <br>
-            Expired on $validity->validTill <br>
-            Purchase a new code";
+            $valid_message = "<br> Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #aaa'>Invalid / Empty Code</span> <br>";
         }
         $this->form_fields = [
             'enabled' => [
@@ -147,7 +148,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
                 'title' => __('Activation Key', 'woo-hubtel'),
                 'id' => 'activation_code',
                 'type' => 'password',
-                'description' => __($valid_message, 'woo-hubtel'),
+                'description' => __("Code to activate plugin." . $valid_message, 'woo-hubtel'),
                 'desc_tip' => false
             ],
             'rule' => [
