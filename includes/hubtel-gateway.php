@@ -61,6 +61,15 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
      * Initialise Gateway Settings Form Fields.
      */
     public function init_form_fields() {
+        $validity = $this->validate_request($this->settings['activation_code']);
+        if ($validity->valid) {
+            $valid_message = "<br> Subscription Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #00c731'>Activated</span> <br>
+            Expires on $validity->validTill";
+        } else {
+            $valid_message = "<br> Subscription Status: <span style='padding: 1px 5px 3px 5px; border-radius: 5px; color:white; background-color: #bb0000'>Expired</span> <br>
+            Expired on $validity->validTill <br>
+            Purchase a new code";
+        }
         $this->form_fields = [
             'enabled' => [
                 'title' => __('Enable/Disable', 'woo-hubtel'),
@@ -138,8 +147,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
                 'title' => __('Activation Key', 'woo-hubtel'),
                 'id' => 'activation_code',
                 'type' => 'password',
-                'description' => __('Code to activate the plugin. The plugin is activated after you enter a valid key',
-                    'woo-hubtel'),
+                'description' => __($valid_message, 'woo-hubtel'),
                 'desc_tip' => false
             ],
             'rule' => [
@@ -180,8 +188,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             }
         }
 
-        $valid = $this->validate_request($this->settings['activation_code']);
-        if (!$valid) {
+        $validity = $this->validate_request($this->settings['activation_code']);
+        if (!$validity->valid) {
             $this->settings['enabled'] = 'no';
         } else {
             $this->settings['enabled'] = 'yes';
@@ -206,9 +214,9 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
         $this->clientSecret = $hp_settings['client_secret'];
         $this->userMode = $hp_settings['user_type'];
 
-        $valid = $this->validate_request($this->activation);
+        $validity = $this->validate_request($this->activation);
 
-        if (!$valid) {
+        if (!$validity->valid) {
             $message = __('Order payment failed. Please retry after some time.', 'woo-hubtel');
             throw new Exception($message);
         }
@@ -286,7 +294,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 
         $url = 'https://excelliumgh.com/cdn/plugins/woo-hubtel/pay';
         $args = ['headers' => ['Content-Type' => 'application/json'], 'timeout' => 60, 'body' => json_encode($payload)];
-        
+
         $request = wp_remote_post($url, $args);
         if (!is_wp_error($request) && 200 === wp_remote_retrieve_response_code($request)) {
             $response = json_decode(wp_remote_retrieve_body($request));
@@ -398,7 +406,6 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             'site' => site_url(),
         ])];
         $request = wp_remote_post('https://excelliumgh.com/cdn/plugins/woo-hubtel/verify', $args);
-        $validity = json_decode(wp_remote_retrieve_body($request));
-        return $validity->valid;
+        return json_decode(wp_remote_retrieve_body($request));
     }
 }
