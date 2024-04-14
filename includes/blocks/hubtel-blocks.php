@@ -21,7 +21,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
      *
      * @var string
      */
-    protected $name = 'hubtel';
+    protected $name = 'hubtel-payments';
 
     /**
      * Initializes the payment method type.
@@ -65,7 +65,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
         );
 
         if (function_exists('wp_set_script_translations')) {
-            wp_set_script_translations('wc-hubtel-blocks', 'woo-hubtel', Hubtel::plugin_abspath() . 'languages/');
+            wp_set_script_translations('wc-hubtel-blocks', 'hubtel-payments', Hubtel::plugin_abspath() . 'languages/');
         }
 
         return ['wc-hubtel-blocks'];
@@ -91,11 +91,11 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
         $headers = [
             'Content-Type' => 'application/json',
         ];
-        $args = ['headers' => $headers, 'timeout' => 60, 'body' => json_encode([
+        $args = ['headers' => $headers, 'timeout' => 60, 'body' => wp_json_encode([
             'code' => $activation,
             'site' => site_url(),
         ])];
-        
+
         $request = wp_remote_post('https://excelliumgh.com/cdn/plugins/woo-hubtel/verify', $args);
         $validity = wp_remote_retrieve_body($request);
 
