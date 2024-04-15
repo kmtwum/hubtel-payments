@@ -332,7 +332,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
     }
 
     public function delayed_feedback() {
-        $json = file_get_contents('php://input');
+        $json = wp_kses(file_get_contents('php://input'), 'data');
         $response = json_decode($json);
 
         if ($response->ResponseCode === '0000') {

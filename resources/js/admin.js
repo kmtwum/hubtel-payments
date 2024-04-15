@@ -6,9 +6,10 @@ jQuery(function ($) {
          * Initialize.
          */
         init: function () {
-            $('#woocommerce_hubtel_user_type').change(function () {
-                const posNumber = $('#woocommerce_hubtel_merchant_account_number').parents( 'tr' ).eq( 0 )
-                const mobileNumber = $('#woocommerce_hubtel_mobile_number').parents( 'tr' ).eq( 0 )
+            const userType = $('#woocommerce_hubtel_user_type')
+            userType.change(function () {
+                const posNumber = $('#woocommerce_hubtel_merchant_account_number').parents('tr').eq(0)
+                const mobileNumber = $('#woocommerce_hubtel_mobile_number').parents('tr').eq(0)
                 if ($(this).val() === 'merchant') {
                     posNumber.show()
                     mobileNumber.hide()
@@ -17,7 +18,7 @@ jQuery(function ($) {
                     mobileNumber.show()
                 }
             })
-            $( '#woocommerce_hubtel_user_type' ).change();
+            userType.change();
         }
     }
 
