@@ -3,7 +3,7 @@
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
 /**
- * Hubtel Payments Blocks integration
+ * Payments for Hubtel Blocks integration
  *
  * @since 1.0.0
  */
@@ -21,7 +21,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
      *
      * @var string
      */
-    protected $name = 'hubtel-payments';
+    protected $name = 'payments-hubtel';
 
     /**
      * Initializes the payment method type.
@@ -65,7 +65,7 @@ final class Hubtel_Blocks extends AbstractPaymentMethodType {
         );
 
         if (function_exists('wp_set_script_translations')) {
-            wp_set_script_translations('wc-hubtel-blocks', 'hubtel-payments', Hubtel::plugin_abspath() . 'languages/');
+            wp_set_script_translations('wc-hubtel-blocks', 'payments-hubtel', Hubtel::plugin_abspath() . 'languages/');
         }
 
         return ['wc-hubtel-blocks'];

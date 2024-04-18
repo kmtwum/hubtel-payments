@@ -1,4 +1,4 @@
-# Hubtel Payments Plugin
+# Payments for Hubtel Plugin
 A payment gateway for Hubtel, Ghana.
 Accept payment from mobile money and Ghana issued cards.
 

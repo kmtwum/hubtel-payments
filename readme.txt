@@ -1,4 +1,4 @@
-=== Hubtel Payments ===
+=== Payments for Hubtel ===
 Contributors: kmtwum
 Donate link: https://ko-fi.com/Y8Y6QZE79
 Tags: hubtel, woocommerce, visa, mobile money, ghana

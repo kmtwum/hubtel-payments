@@ -34,12 +34,12 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
      * Constructor for the gateway.
      */
     public function __construct() {
-        $this->id = 'hubtel-payments';
+        $this->id = 'payments-hubtel';
         $this->icon = Hubtel::plugin_url() . '/assets/hubtel.png';
         $this->has_fields = false;
 
-        $this->method_title = _x('Mobile Money / Cards', 'Hubtel payment method', 'hubtel-payments');
-        $this->method_description = __('Pay with mobile money or a Ghana issued card.', 'hubtel-payments');
+        $this->method_title = _x('Mobile Money / Cards', 'Hubtel payment method', 'payments-hubtel');
+        $this->method_description = __('Pay with mobile money or a Ghana issued card.', 'payments-hubtel');
 
         // Load the settings.
         $this->init_settings();
@@ -73,92 +73,92 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
         }
         $this->form_fields = [
             'enabled' => [
-                'title' => __('Enable/Disable', 'hubtel-payments'),
+                'title' => __('Enable/Disable', 'payments-hubtel'),
                 'type' => 'checkbox',
-                'label' => __('Enable Hubtel Payments', 'hubtel-payments'),
+                'label' => __('Enable Payments for Hubtel', 'payments-hubtel'),
                 'default' => 'no',
             ],
             'title' => [
-                'title' => __('Title', 'hubtel-payments'),
+                'title' => __('Title', 'payments-hubtel'),
                 'type' => 'text',
-                'label' => __('Mobile money / Cards', 'hubtel-payments'),
-                'description' => __('The title a user will see representing Hubtel payments.', 'hubtel-payments'),
+                'label' => __('Mobile money / Cards', 'payments-hubtel'),
+                'description' => __('The title a user will see representing Payments for Hubtel.', 'payments-hubtel'),
                 'default' => 'Mobile money / Cards',
             ],
             'description' => [
-                'title' => __('Description', 'hubtel-payments'),
+                'title' => __('Description', 'payments-hubtel'),
                 'type' => 'text',
-                'label' => __('Pay with mobile money or a Ghana issued card.', 'hubtel-payments'),
-                'description' => __('The description a user will see on checkout representing Hubtel payments',
-                    'hubtel-payments'),
+                'label' => __('Pay with mobile money or a Ghana issued card.', 'payments-hubtel'),
+                'description' => __('The description a user will see on checkout representing Payments for Hubtel',
+                    'payments-hubtel'),
                 'default' => 'Pay with mobile money or a Ghana issued card.',
             ],
             'merchant_options' => [
-                'title' => __('Hubtel Options', 'hubtel-payments'),
+                'title' => __('Hubtel Options', 'payments-hubtel'),
                 'type' => 'title',
                 'description' => __("The following options affect where your funds will be sent when users pay.
-                \r\n Use only if you have a fund collection account", 'hubtel-payments'),
+                \r\n Use only if you have a fund collection account", 'payments-hubtel'),
                 'id' => 'merchant_options'
             ],
             'user_type' => [
-                'title' => __('User Type', 'hubtel-payments'),
+                'title' => __('User Type', 'payments-hubtel'),
                 'type' => 'select',
-                'description' => __('Specify whether you\'re a merchant or a normal customer.', 'hubtel-payments'),
+                'description' => __('Specify whether you\'re a merchant or a normal customer.', 'payments-hubtel'),
                 'default' => '',
                 'desc_tip' => false,
                 'options' => [
-                    '' => __('Select Type', 'hubtel-payments'),
-                    'merchant' => __('Merchant', 'hubtel-payments'),
-                    'consumer' => __('Customer / Consumer', 'hubtel-payments'),
+                    '' => __('Select Type', 'payments-hubtel'),
+                    'merchant' => __('Merchant', 'payments-hubtel'),
+                    'consumer' => __('Customer / Consumer', 'payments-hubtel'),
                 ],
             ],
             'mobile_number' => [
-                'title' => __('Your Mobile Number', 'hubtel-payments'),
+                'title' => __('Your Mobile Number', 'payments-hubtel'),
                 'id' => 'hubtel_mobile_number',
                 'type' => 'text',
                 'placeholder' => '233.........',
                 'description' => sprintf(__('Your mobile number, as used on Hubtel. Beginning with %1$s233%2$s',
-                    'hubtel-payments'), '<b>', '</b>'),
+                    'payments-hubtel'), '<b>', '</b>'),
                 'desc_tip' => false,
             ],
             'merchant_account_number' => [
-                'title' => __('Merchant Account Number', 'hubtel-payments'),
+                'title' => __('Merchant Account Number', 'payments-hubtel'),
                 'id' => 'hubtel_merchant_account_number',
                 'type' => 'text',
                 'description' => __('Account Number of your POS Sales Account, issued on Hubtel.',
-                    'hubtel-payments'),
+                    'payments-hubtel'),
                 'desc_tip' => false
             ],
             'client_id' => [
-                'title' => __('Client ID / API ID', 'hubtel-payments'),
+                'title' => __('Client ID / API ID', 'payments-hubtel'),
                 'id' => 'hubtel_client_id',
                 'type' => 'text',
-                'description' => __('Your Client Id (consumer) or API ID (merchant) issued on Hubtel.', 'hubtel-payments'),
+                'description' => __('Your Client Id (consumer) or API ID (merchant) issued on Hubtel.', 'payments-hubtel'),
                 'desc_tip' => false
             ],
             'client_secret' => [
-                'title' => __('Client Secret / API Key', 'hubtel-payments'),
+                'title' => __('Client Secret / API Key', 'payments-hubtel'),
                 'id' => 'hubtel_client_secret',
                 'type' => 'text',
                 'description' => __('Your Client Secret (consumer) or API Key (merchant) issued on Hubtel.',
-                    'hubtel-payments'),
+                    'payments-hubtel'),
                 'desc_tip' => false
             ],
             'activation_code' => [
-                'title' => __('Activation Key', 'hubtel-payments'),
+                'title' => __('Activation Key', 'payments-hubtel'),
                 'id' => 'activation_code',
                 'type' => 'password',
-                'description' => sprintf(__("Code to activate plugin. %s", 'hubtel-payments'), $valid_message),
+                'description' => sprintf(__("Code to activate plugin. %s", 'payments-hubtel'), $valid_message),
                 'desc_tip' => false
             ],
             'rule' => [
-                'title' => __('', 'hubtel-payments'),
+                'title' => __('', 'payments-hubtel'),
                 'type' => 'title',
-                'description' => __('<hr/>', 'hubtel-payments'),
+                'description' => __('<hr/>', 'payments-hubtel'),
                 'default' => '',
             ],
             'activation_instructions' => [
-                'title' => __('Activation Instructions', 'hubtel-payments'),
+                'title' => __('Activation Instructions', 'payments-hubtel'),
                 'type' => 'title',
                 'description' => __('<ul><li>
                                                 • Click <a target="_blank" href="https://paystack.com/pay/hubtel-activate">here</a>
@@ -170,7 +170,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
                                             <li>
                                                 • Head back here to enter your activation key to activate the plugin
                                             </li>
-                                            </ul>', 'hubtel-payments'),
+                                            </ul>', 'payments-hubtel'),
                 'default' => '',
             ]
         ];
@@ -218,7 +218,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
         $validity = $this->validate_request($this->activation);
 
         if (!$validity->valid) {
-            $message = __('Order payment failed. Please retry after some time.', 'hubtel-payments');
+            $message = __('Order payment failed. Please retry after some time.', 'payments-hubtel');
             throw new Exception($message);
         }
 
@@ -272,7 +272,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             $response = json_decode(wp_remote_retrieve_body($request));
             return $response->data->paylinkUrl;
         } else {
-            $message = __('Order payment failed. Please retry after some time.', 'hubtel-payments');
+            $message = __('Order payment failed. Please retry after some time.', 'payments-hubtel');
             throw new Exception($message);
         }
     }
@@ -303,7 +303,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
                 return $response->data->checkoutDirectUrl;
             }
         }
-        $message = __('Order payment failed. Please retry after some time.', 'hubtel-payments');
+        $message = __('Order payment failed. Please retry after some time.', 'payments-hubtel');
         throw new Exception($message);
     }
 
@@ -346,7 +346,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
             WC()->cart->empty_cart();
 
             //  Update order with external transaction
-            $order->add_order_note(sprintf(__('Hubtel payment successful. External Id: %s)', 'hubtel-payments'),
+            $order->add_order_note(sprintf(__('Hubtel payment successful. External Id: %s)', 'payments-hubtel'),
                 $externalReference));
             $order->save();
         }
@@ -356,7 +356,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
     public function success_message_after_payment($order_id) {
         $order = wc_get_order($order_id);
         if (in_array($order->get_status(), ['processing', 'completed'])) {
-            wc_print_notice(__("Your payment has been received successfully", "hubtel-payments"));
+            wc_print_notice(__("Your payment has been received successfully", "payments-hubtel"));
         }
     }
 

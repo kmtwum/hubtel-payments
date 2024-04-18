@@ -38,7 +38,7 @@ const Label = ( props ) => {
  * Hubtel payment method config object.
  */
 const Hubtel = {
-	name: "hubtel-payments",
+	name: "payments-hubtel",
 	label: <Label />,
 	content: <Content />,
 	edit: <Content />,
