@@ -63,12 +63,12 @@ Once you have all these details, go back to the plugin settings page and enter t
 == Changelog ==
 
 = 1.0.2 =
-* Drop
-* Security: the return URL now requires a valid order key before redirecting to the order-received page
-* Security: payment callbacks are verified with a per-order token, so orders can no longer be marked paid by forged requests
+* Security: return URL now requires a valid order key before redirecting to the order-received page. 
+* Security: payment callbacks are verified with a per-order token.
 * Orders are put on hold when Hubtel reports a payment below the order total
 * Repeated payment callbacks no longer re-process orders that are already paid
-* Removed debug logging that wrote payment details to a file in the plugin folder, and delete any existing log file
+* Removed debug logging that wrote payment details to a file in the plugin folder, and delete any existing log file.
+Thanks to Naoki Kawahigashi, Enrico Marcolini and Claudio Marchesini (Dottor Marc) for reporting
 
 = 1.0.1 =
 * Dropped buggy alert in checkout
