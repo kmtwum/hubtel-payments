@@ -263,8 +263,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"description"     => 'Purchase made on ' . get_bloginfo( 'name' ),
 			"clientReference" => $this->generateId( 'WOO' ) . $order_data->id,
 			"callbackUrl"     => WC()->api_request_url( 'hubtel_gateway_delayed' ),
-			"cancellationUrl" => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
-			"returnUrl"       => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
+			"cancellationUrl" => $this->get_feedback_url( $order_data ),
+			"returnUrl"       => $this->get_feedback_url( $order_data ),
 			"mobile"          => $this->mobileNumber,
 			"userMode"        => $this->userMode,
 			"site"            => get_bloginfo( 'url' )
@@ -294,8 +294,8 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"amount"          => (float) $order_data->total,
 			"description"     => 'Purchase made on ' . get_bloginfo( 'name' ),
 			"callbackUrl"     => WC()->api_request_url( 'hubtel_gateway_delayed' ),
-			"returnUrl"       => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
-			"cancellationUrl" => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
+			"returnUrl"       => $this->get_feedback_url( $order_data ),
+			"cancellationUrl" => $this->get_feedback_url( $order_data ),
 			"accountNumber"   => $this->merchantAccount,
 			"clientReference" => $this->generateId( 'WOO' ) . $order_data->id,
 			"userMode"        => $this->userMode,
@@ -325,22 +325,37 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			exit;
 		}
 
-		$orderString = sanitize_text_field( $_REQUEST['o'] );
-		if ( strpos( $orderString, '?' ) !== false ) {
-			$order_id = substr( $orderString, 0, strpos( $orderString, '?' ) );
-		} else {
-			$order_id = $orderString;
-		}
+		$order_id  = $this->strip_appended_query( $_REQUEST['o'] );
+		$order_key = isset( $_REQUEST['key'] ) ? $this->strip_appended_query( $_REQUEST['key'] ) : '';
 
 		$order = wc_get_order( $order_id );
 
-		if ( ! $order ) {
-			return;
+		// Only redirect when the request proves it belongs to this order
+		if ( ! $order || '' === $order_key || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+			wp_safe_redirect( home_url() );
+			exit;
 		}
 
 		// Return thank-you redirect
 		wp_redirect( $this->get_return_url( $order ) );
 		exit;
+	}
+
+	private function get_feedback_url( $order_data ): string {
+		return add_query_arg( [
+			'o'   => $order_data->id,
+			'key' => $order_data->order_key,
+		], WC()->api_request_url( 'hubtel_gateway' ) );
+	}
+
+	/**
+	 * Hubtel appends its own "?..." to the return URL, which ends up inside the last parameter's value.
+	 */
+	private function strip_appended_query( $value ): string {
+		$value = sanitize_text_field( wp_unslash( $value ) );
+		$pos   = strpos( $value, '?' );
+
+		return false === $pos ? $value : substr( $value, 0, $pos );
 	}
 
 	public function delayed_feedback() {
