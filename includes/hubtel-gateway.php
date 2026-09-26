@@ -55,6 +55,11 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_api_hubtel_gateway_delayed', [ $this, 'delayed_feedback' ] );
 		add_action( 'woocommerce_before_thankyou', [ $this, 'success_message_after_payment' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
+		
+		// Delete log file if exists
+		if ( file_exists(__DIR__ . '/bro.txt') ) {
+			@unlink(__DIR__ . '/bro.txt');
+		}
 	}
 
 	/**
@@ -264,10 +269,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"userMode"        => $this->userMode,
 			"site"            => get_bloginfo( 'url' )
 		];
-
-		$this->tail( 'Consumer Payload' );
-		$this->tail( $payload );
-
+		
 		$url  = "https://excelliumgh.com/cdn/plugins/woo-hubtel/pay";
 		$args = [
 			'headers' => [ 'Content-Type' => 'application/json' ],
@@ -300,9 +302,6 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"site"            => get_bloginfo( 'url' )
 		];
 
-		$this->tail( 'Merchant Payload' );
-		$this->tail( $payload );
-
 		$url  = 'https://excelliumgh.com/cdn/plugins/woo-hubtel/pay';
 		$args = [
 			'headers' => [ 'Content-Type' => 'application/json' ],
@@ -332,7 +331,6 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 		} else {
 			$order_id = $orderString;
 		}
-		$this->tail( 'Order Id seen as' . $order_id );
 
 		$order = wc_get_order( $order_id );
 
@@ -386,10 +384,6 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 
 		wp_localize_script( 'wc_hubtel_admin', 'wc_hubtel_admin_params', $admin_params );
 
-	}
-
-	public function tail( $str ) {
-		@file_put_contents( __DIR__ . '/bro.txt', print_r( $str, true ) . "\r\n", FILE_APPEND | LOCK_EX );
 	}
 
 	public function generateId( $prefix ): string {
