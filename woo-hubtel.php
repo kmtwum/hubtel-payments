@@ -104,7 +104,7 @@ class Hubtel {
 	 * @return string
 	 */
 	public static function version() {
-		return '1.0.1';
+		return '1.0.2';
 	}
 
 	/**
