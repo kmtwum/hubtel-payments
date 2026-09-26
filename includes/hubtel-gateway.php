@@ -26,6 +26,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 	public $mobileNumber;
 	public $userMode;
 	public $merchantAccount;
+	public $callbackUrl;
 	public $id;
 	public $icon;
 	public $has_fields;
@@ -222,6 +223,7 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 		$this->activation   = $hp_settings['activation_code'];
 		$this->clientSecret = $hp_settings['client_secret'];
 		$this->userMode     = $hp_settings['user_type'];
+		$this->callbackUrl  = $this->get_callback_url( $order );
 
 		$validity = $this->validate_request( $this->activation );
 
@@ -262,9 +264,9 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"title"           => 'Order Payment',
 			"description"     => 'Purchase made on ' . get_bloginfo( 'name' ),
 			"clientReference" => $this->generateId( 'WOO' ) . $order_data->id,
-			"callbackUrl"     => WC()->api_request_url( 'hubtel_gateway_delayed' ),
-			"cancellationUrl" => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
-			"returnUrl"       => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
+			"callbackUrl"     => $this->callbackUrl,
+			"cancellationUrl" => $this->get_feedback_url( $order_data ),
+			"returnUrl"       => $this->get_feedback_url( $order_data ),
 			"mobile"          => $this->mobileNumber,
 			"userMode"        => $this->userMode,
 			"site"            => get_bloginfo( 'url' )
@@ -293,9 +295,9 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			"identifier"      => $this->clientId . ':' . $this->clientSecret,
 			"amount"          => (float) $order_data->total,
 			"description"     => 'Purchase made on ' . get_bloginfo( 'name' ),
-			"callbackUrl"     => WC()->api_request_url( 'hubtel_gateway_delayed' ),
-			"returnUrl"       => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
-			"cancellationUrl" => WC()->api_request_url( 'hubtel_gateway' ) . '?o=' . $order_data->id,
+			"callbackUrl"     => $this->callbackUrl,
+			"returnUrl"       => $this->get_feedback_url( $order_data ),
+			"cancellationUrl" => $this->get_feedback_url( $order_data ),
 			"accountNumber"   => $this->merchantAccount,
 			"clientReference" => $this->generateId( 'WOO' ) . $order_data->id,
 			"userMode"        => $this->userMode,
@@ -325,17 +327,15 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 			exit;
 		}
 
-		$orderString = sanitize_text_field( $_REQUEST['o'] );
-		if ( strpos( $orderString, '?' ) !== false ) {
-			$order_id = substr( $orderString, 0, strpos( $orderString, '?' ) );
-		} else {
-			$order_id = $orderString;
-		}
+		$order_id  = $this->strip_appended_query( $_REQUEST['o'] );
+		$order_key = isset( $_REQUEST['key'] ) ? $this->strip_appended_query( $_REQUEST['key'] ) : '';
 
 		$order = wc_get_order( $order_id );
 
-		if ( ! $order ) {
-			return;
+		// Only redirect when the request proves it belongs to this order
+		if ( ! $order || '' === $order_key || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+			wp_safe_redirect( home_url() );
+			exit;
 		}
 
 		// Return thank-you redirect
@@ -343,19 +343,68 @@ class Hubtel_Gateway extends WC_Payment_Gateway {
 		exit;
 	}
 
+	/**
+	 * Reuses the order's token so a pay link from an earlier attempt still completes the order.
+	 */
+	private function get_callback_url( $order ): string {
+		$token = $order->get_meta( '_hubtel_callback_token' );
+		if ( ! $token ) {
+			$token = wp_generate_password( 32, false );
+			$order->update_meta_data( '_hubtel_callback_token', $token );
+			$order->save();
+		}
+
+		return add_query_arg( 'token', $token, WC()->api_request_url( 'hubtel_gateway_delayed' ) );
+	}
+
+	private function get_feedback_url( $order_data ): string {
+		return add_query_arg( [
+			'o'   => $order_data->id,
+			'key' => $order_data->order_key,
+		], WC()->api_request_url( 'hubtel_gateway' ) );
+	}
+
+	/**
+	 * Hubtel appends its own "?..." to the return URL, which ends up inside the last parameter's value.
+	 */
+	private function strip_appended_query( $value ): string {
+		$value = sanitize_text_field( wp_unslash( $value ) );
+		$pos   = strpos( $value, '?' );
+
+		return false === $pos ? $value : substr( $value, 0, $pos );
+	}
+
 	public function delayed_feedback() {
 		$json     = wp_kses( file_get_contents( 'php://input' ), 'data' );
 		$response = json_decode( $json );
 
-		if ( $response->ResponseCode === '0000' ) {
+		if ( isset( $response->ResponseCode ) && $response->ResponseCode === '0000' ) {
 			$clientReference   = $response->Data->ClientReference;
 			$externalReference = $response->Data->TransactionId ?? $response->Data->SalesInvoiceId;
 			$order_id          = $this->getOrderIdFromReference( $clientReference );
 			$order             = wc_get_order( $order_id );
+			$token             = isset( $_GET['token'] ) ? $this->strip_appended_query( $_GET['token'] ) : '';
 
-			//  Complete order and clear cart
+			// Only Hubtel knows the callback URL's token, so anything without it is not a genuine callback
+			if ( ! $order || '' === $token || ! hash_equals( (string) $order->get_meta( '_hubtel_callback_token' ), $token ) ) {
+				status_header( 403 );
+				exit;
+			}
+
+			// Ignore replayed callbacks for orders that are already paid
+			if ( ! $order->needs_payment() ) {
+				exit;
+			}
+
+			// Hubtel may add charges on top, so only a shortfall is a problem
+			if ( isset( $response->Data->Amount ) && (float) $response->Data->Amount < (float) $order->get_total() ) {
+				$order->update_status( 'on-hold', sprintf( __( 'Hubtel reported a payment of %1$s, less than the order total. External Id: %2$s', 'payments-hubtel' ),
+					$response->Data->Amount, $externalReference ) );
+				exit;
+			}
+
+			//  Complete order
 			$order->payment_complete();
-			WC()->cart->empty_cart();
 
 			//  Update order with external transaction
 			$order->add_order_note( sprintf( __( 'Hubtel payment successful. External Id: %s)', 'payments-hubtel' ),
