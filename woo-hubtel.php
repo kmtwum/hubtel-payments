@@ -7,11 +7,11 @@
  * Version: 1.0.2
  * Requires at least: 6.3
  * Requires PHP: 7.4
- * Tested up to: 6.8
+ * Tested up to: 7.1
  * Author: Kwame Twum
  * Author URI: https://github.com/kmtwum
  * WC requires at least: 7.0
- * WC tested up to: 8.3
+ * WC tested up to: 11.1
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *

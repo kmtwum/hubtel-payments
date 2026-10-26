@@ -3,7 +3,7 @@ Contributors: kmtwum
 Donate link: https://ko-fi.com/Y8Y6QZE79
 Tags: hubtel, woocommerce, visa, mobile money, ghana
 Requires at least: 6.3
-Tested up to: 6.8
+Tested up to: 7.1
 Stable tag: 1.0.2
 Requires PHP: 7.4
 License: GNU General Public License v3.0
